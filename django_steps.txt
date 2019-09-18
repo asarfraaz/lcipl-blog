@@ -1,0 +1,83 @@
+1. Create virtual environment
+2. pip install django==2.1
+3. Create a new folder for Django project
+    - mkdir django_project
+    - cd django_project
+
+4. Create a website
+    - django-admin.py startproject lcipl .
+    - Make sure you don't forget the dot at the end of the previous command
+
+5. Modify lcipl/settings.py
+    - TIME_ZONE = 'Asia/Calcutta'
+    - STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+    - ALLOWED_HOSTS = ['127.0.0.1', '.lcipl.com']
+
+6. Set up Database for website
+    - update lcipl/settings.py
+    - DATABASES = {
+                    'default': {
+                        'ENGINE': 'django.db.backends.mysql',
+                        'NAME': 'django_db',
+                        'USER': 'root',
+                        'PASSWORD': 'your_password',
+                    }
+                  }
+
+7. Create the database for the website
+    - python manage.py migrate
+
+8. To start the web server
+    - python manage.py runserver
+
+9. View the website on browser at : https://127.0.0.1:8000/
+
+10. Create an App [ called blog ]
+    - python manage.py startapp blog
+
+11. Add new app to settings.py
+    - lcipl/settings.py
+    - INSTALLED_APPS = [
+            ...,
+            'blog.apps.BlogConfig',
+        ]
+
+12. Define the model that represents the table that stores blog information
+    - lcipl/models.py
+    from django.conf import settings
+    from django.db import models
+    from django.utils import timezone
+
+
+    class Post(models.Model):
+        author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+        title = models.CharField(max_length=200)
+        text = models.TextField()
+        created_date = models.DateTimeField(default=timezone.now)
+        published_date = models.DateTimeField(blank=True, null=True)
+
+        def publish(self):
+            self.published_date = timezone.now()
+            self.save()
+
+        def __str__(self):
+            return self.title
+
+13. Prepare django to update database with new tables
+    - python manage.py makemigrations blog
+
+14. Apply the changes to database
+    - python manage.py migrate blog
+
+15. Inform Django Admin about the new model
+    - blog/admin.py
+        from django.contrib import admin
+        from .models import Post
+
+        admin.site.register(Post)
+
+16. Create superuser for blog app
+    - python manage.py createsuperuser
+
+17. View admin site at : https://127.0.0.1;8000/admin/
+    - Create new posts
