@@ -81,3 +81,94 @@
 
 17. View admin site at : https://127.0.0.1;8000/admin/
     - Create new posts
+
+18. To create views
+    - update lcipl/urls.py
+    from django.urls import path, include
+    path('', include('blog.urls')),
+
+19. In blog/views.py
+    def post_list(request):                                                          
+      return render(request, 'blog/post_list.html', {})
+    
+20. Create folders
+    - mkdir -p blog/templates/blog
+
+21. Create blog/templates/blog/post_list.html
+    <html>                                                                           
+       <head>
+           <title>LCIPL's blog</title>
+       </head>
+       <body>
+           <p>Hi there!</p>
+           <p>It works!</p>
+       </body> 
+    </html>
+
+21. Django ORM on the Django prompt
+
+#############
+(python3_code_env) apple (master *) django_project $ python manage.py shell
+Python 3.6.4 (default, Dec 20 2017, 14:46:04) 
+Type 'copyright', 'credits' or 'license' for more information
+IPython 6.2.1 -- An enhanced Interactive Python. Type '?' for help.
+
+In [1]: Post.objects.all()
+---------------------------------------------------------------------------
+NameError                                 Traceback (most recent call last)
+<ipython-input-1-09ba15aa7345> in <module>()
+----> 1 Post.objects.all()
+
+NameError: name 'Post' is not defined
+
+In [2]: from blog.models import Post
+
+In [3]: Post.objects.all()
+Out[3]: <QuerySet [<Post: Chapter 1>, <Post: Chapter 2>, <Post: Chapter 3>, <Post: Chapter 4>, <Post: Chapter 5>]>
+
+In [4]: Post.objects.create(author=me, title='Sample title', text='Test')
+---------------------------------------------------------------------------
+NameError                                 Traceback (most recent call last)
+<ipython-input-4-19c99b44c875> in <module>()
+----> 1 Post.objects.create(author=me, title='Sample title', text='Test')
+
+NameError: name 'me' is not defined
+
+In [7]: from django.contrib.auth.models import User
+
+In [8]: User.objects.all()
+Out[8]: <QuerySet [<User: pytrainer>]>
+
+In [9]: me = User.objects.get(username='pytrainer')
+
+In [10]: Post.objects.create(author=me, title='Sample title', text='Test')
+Out[10]: <Post: Sample title>
+
+In [11]: Post.objects.all()
+Out[11]: <QuerySet [<Post: Chapter 1>, <Post: Chapter 2>, <Post: Chapter 3>, <Post: Chapter 4>, <Post: Chapter 5>, <Post: Sample title>]>
+
+In [13]: Post.objects.filter(title__contains='title')
+Out[13]: <QuerySet [<Post: Sample title>]>
+
+In [14]: from django.utils import timezone
+
+In [15]: Post.objects.filter(published_date__lte=timezone.now())
+Out[15]: <QuerySet [<Post: Chapter 1>, <Post: Chapter 2>]>
+
+In [16]: post = Post.objects.get(title="Sample title")
+
+In [17]: post.publish()
+
+In [18]: Post.objects.filter(published_date__lte=timezone.now())
+Out[18]: <QuerySet [<Post: Chapter 1>, <Post: Chapter 2>, <Post: Sample title>]>
+
+In [19]: Post.objects.order_by('created_date')
+Out[19]: <QuerySet [<Post: Chapter 1>, <Post: Chapter 2>, <Post: Chapter 3>, <Post: Chapter 4>, <Post: Chapter 5>, <Post: Sample title>]>
+
+In [20]: Post.objects.order_by('-created_date')
+Out[20]: <QuerySet [<Post: Sample title>, <Post: Chapter 5>, <Post: Chapter 4>, <Post: Chapter 3>, <Post: Chapter 2>, <Post: Chapter 1>]>
+
+In [21]: exit()
+(python3_code_env) apple (master *) django_project $ 
+
+#############
